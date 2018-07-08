@@ -425,7 +425,7 @@ for filepath in myfilespath:
 					# overlap=noofeventsreg/noofeventsorig
 
 
-					trainimage=padwithzeros(trainimage)
+					# trainimage=padwithzeros(trainimage)
 					trainimage=preprocess3(trainimage)
 
 					# print("negative")
@@ -443,7 +443,7 @@ for filepath in myfilespath:
 					generation=1
 
 		
-		trainingimage=padwithzeros(croppedimage)
+		# trainingimage=padwithzeros(croppedimage)
 		trainingimage=preprocess3(trainingimage)
 		# print("positive")
 		# cv2.imshow('image',trainingimage)
