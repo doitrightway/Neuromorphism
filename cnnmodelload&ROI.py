@@ -76,14 +76,14 @@ def custommetric(y_true,y_pred):
 # keras.losses.customloss = customloss
 # sgd = SGD(lr=0.01, decay=.003, momentum=0.9, nesterov=True)
 
-model = load_model('objectnessnetworkiou_random_boundingboxes.09.hdf5')
+model = load_model('objectnessnetworkiou_2objects_nearest.08.hdf5')
 # model.compile(loss=customloss, optimizer=sgd, metrics=['accuracy'])
 
 model_json = model.to_json()
-with open("objectnessnetworkiou_random_boundingboxes.09.json","w") as json_file:
+with open("objectnessnetworkiou_2objects_nearest.08.json","w") as json_file:
 	json_file.write(model_json)
 
-model.save_weights("objectnessnetworkiou_random_boundingboxes.09.h5")
+model.save_weights("objectnessnetworkiou_2objects_nearest.08.h5")
 print("Saved model to disk")
 
 

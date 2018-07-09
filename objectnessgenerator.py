@@ -40,20 +40,15 @@ class DataGenerator(keras.utils.Sequence):
 	def __data_generation(self,list_ids):
 
 		X= np.empty((self.batch_size,self.dim,self.dim,1))
-		y= np.empty((self.batch_size,2))
+		y= np.empty(self.batch_size)
+
 
 		for i,ID in enumerate(list_ids):
-			X= np.empty((self.batch_size,self.dim,self.dim,1))
-			y= np.empty((self.batch_size,2))
-
-			for i,ID in enumerate(list_ids):
-				file= open(self.trainingfolder+self.winubu+self.files[ID],'rb')
-				object_file=pickle.load(file)
-				file.close()
-				data=np.array(object_file['data'])
-				X[i]=data.reshape(self.dim,self.dim,1)
-				myvar=np.zeros(2)
-				myvar[object_file['label']]=1
-				y[i]=myvar
+			file= open(self.trainingfolder+self.winubu+self.files[ID],'rb')
+			object_file=pickle.load(file)
+			file.close()
+			data=np.array(object_file['data'])
+			X[i]=data.reshape(self.dim,self.dim,1)
+			y[i]=object_file['label']
 
 		return X,y

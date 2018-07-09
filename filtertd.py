@@ -18,7 +18,7 @@ def filtertd(file):
 	output['t']= np.array(output['t'])
 	output['t']=output['t']-output['t'][0]
 
-	thresh = 40000
+	thresh = 50000
 
 	for i in range(len(output['p'])):
 		coord_x=output['x'][i]

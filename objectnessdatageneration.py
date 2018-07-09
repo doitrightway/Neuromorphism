@@ -271,17 +271,17 @@ def preprocess2(image):
  
 def preprocess3(image):
 	image=np.array(image)
-	newimage=cv2.resize(image,(64,64),interpolation = cv2.INTER_CUBIC)
+	newimage=cv2.resize(image,(64,64),interpolation = cv2.INTER_NEAREST)
 	return newimage
 
 ##########################################
 
-mypath="trainingnewdata"
-objectnessdata="trainingobjectnessdataiou_random_boundingboxes"
+mypath="testingnewdata"
+objectnessdata="testingobjectnessdataiou_2objects_nearest"
 
 myfilespath = glob.glob(mypath + '/**/*.aedat', recursive=True)
 listofobjects={}
-winubu='\\'
+winubu='/'
 
 if (not(os.path.exists(objectnessdata))):
 	os.makedirs(objectnessdata)
@@ -304,7 +304,7 @@ for filepath in myfilespath:
 	if(not(tmp in listofobjects.keys())):
 		listofobjects[tmp]=0
 
-	output_filt = flt.filtertd(filepath)
+	# output_filt = flt.filtertd(filepath)
 	output_orig = load.xypt(filepath)
 	output_orig['t'] = np.array(output_orig['t'])
 	output_orig['t'] = output_orig['t']-output_orig['t'][0]
@@ -318,21 +318,21 @@ for filepath in myfilespath:
 
 
 ####### File selected and now creating images out of it 
-	for counter in range(start,mt.floor(len(output_filt['t'])/group)):
+	for counter in range(start,mt.floor(len(output_orig['t'])/group)):
 
 		image_orig = [[0 for i in range(128)] for j in range(128)]    ############## Image constructed from original data for events corresponding to last timestamp of filtered events selected
-		image_filt= [[0 for i in range(128)] for j in range(128)]    ########## Image constucted out of filtering the events for first 1000 filtered events
+		# image_filt= [[0 for i in range(128)] for j in range(128)]    ########## Image constucted out of filtering the events for first 1000 filtered events
 
 		for i in range((counter-1)*group,(counter)*group):
-			image_filt[output_filt['y'][i]][output_filt['x'][i]] = 1
+			image_orig[output_orig['y'][i]][output_orig['x'][i]] = 1
 
 
-		comx,comy=getcom(image_filt)
+		comx,comy=getcom(image_orig)
 		total_events=0
 
 		for i in range(128):
 			for j in range(128):
-				total_events+=image_filt[i][j]
+				total_events+=image_orig[i][j]
 
 		thresh = 0.8
 		threshed=total_events/(128*128)
@@ -341,32 +341,33 @@ for filepath in myfilespath:
 		noofeventsreq= int(thresh*total_events)  #####  number of events that should be present in the bounding box
 	
 		upper_bound=0.95*total_events
-		[orig_leftx,orig_rightx,orig_bottomy,orig_topy],[leftx,rightx,bottomy,topy]=createboundingbox(image_filt,noofeventsreq,threshed,comx,comy,upper_bound)
+		[orig_leftx,orig_rightx,orig_bottomy,orig_topy],[leftx,rightx,bottomy,topy]=createboundingbox(image_orig,noofeventsreq,threshed,comx,comy,upper_bound)
 		
-		image_filt=np.array(image_filt)
-		image_filt=image_filt.astype(np.double)
+		# image_filt=np.array(image_filt)
+		# image_filt=image_filt.astype(np.double)
 
 
 		
 
-		if(counter==start):
-			count=0
-			while(output_orig['t'][count]!=output_filt['t'][(counter-1)*group]):
-				count+=1
-			low_index=count
+		# if(counter==start):
+		# 	count=0
+		# 	while(output_orig['t'][count]!=output_filt['t'][(counter-1)*group]):
+		# 		count+=1
+		# 	low_index=count
 
-		count=low_index
-		prev_low_index=low_index
-		while(output_orig['t'][count]!=output_filt['t'][counter*group-1]):
-			coord_x= output_orig['x'][count]
-			coord_y= output_orig['y'][count]
-			image_orig[output_orig['y'][count]][output_orig['x'][count]] = 1
-			count+=1
+		# count=low_index
+		# prev_low_index=low_index
+		# while(output_orig['t'][count]!=output_filt['t'][counter*group-1]):
+		# 	coord_x= output_orig['x'][count]
+		# 	coord_y= output_orig['y'][count]
+		# 	image_orig[output_orig['y'][count]][output_orig['x'][count]] = 1
+		# 	count+=1
 
-		low_index=count
+		# low_index=count
 
 		image_orig=np.array(image_orig)
 		image_orig=image_orig.astype(np.double)
+
 		# cv2.rectangle(image_orig,(leftx,bottomy),(rightx,topy),(100,100,100),1)
 		# cv2.imshow('image',image_orig)
 		# cv2.waitKey(0)
@@ -444,7 +445,7 @@ for filepath in myfilespath:
 
 		
 		# trainingimage=padwithzeros(croppedimage)
-		trainingimage=preprocess3(trainingimage)
+		trainingimage=preprocess3(croppedimage)
 		# print("positive")
 		# cv2.imshow('image',trainingimage)
 		# cv2.waitKey(0)

@@ -64,14 +64,14 @@ def preprocess1(image,leftx,rightx,bottomy,topy):
 
 def preprocess3(image):
 	image=np.array(image)
-	newimage=cv2.resize(image,(64,64),interpolation = cv2.INTER_CUBIC)
+	newimage=cv2.resize(image,(64,64),interpolation = cv2.INTER_NEAREST)
 	return newimage
 
 def preprocess(image,rectangle):
 	# print(rectangle)
 	image=crop(image,rectangle[0],rectangle[1],rectangle[2],rectangle[3])
-	newimage=padwithzeros(image)
-	newimage=preprocess3(newimage)
+	# newimage=padwithzeros(image)
+	newimage=preprocess3(image)
 	return newimage
 
 
@@ -91,7 +91,6 @@ def cnnobjectness(image,boundingboxes,loaded_model):
 	impboundingboxes=[]
 	xte= np.empty((3*len(boundingboxes),dim,dim,1))
 	for i in range(len(boundingboxes)):
-		# rectangle1=[]
 		rectangle1= [boundingboxes[i][0],mt.floor((boundingboxes[i][0]+boundingboxes[i][1])/2),boundingboxes[i][2],boundingboxes[i][3]]
 		rectangle2= [mt.floor((boundingboxes[i][0]+boundingboxes[i][1])/2),boundingboxes[i][1],boundingboxes[i][2],boundingboxes[i][3]]
 		passimage=preprocess(image,boundingboxes[i])
@@ -121,11 +120,11 @@ def cnnobjectness(image,boundingboxes,loaded_model):
 		value1=layer_outs[-1][0][3*i]
 		value2=layer_outs[-1][0][3*i+1]
 		value3=layer_outs[-1][0][3*i+2]
-		probmax=int(np.argmax(value1))
-		if(probmax==1 and value1[1]> 0.5):
-			if((value2[1]+value3[1])/2 < 0.1):
+		# probmax=int(np.argmax(value1))
+		if(value1[0]> 0.5):
+			if((value2[0]+value3[0])/2 < 0.1):
 				impboundingboxes.append(boundingboxes[i])
-				objectness.append(layer_outs[-1][0][3*i][1])
+				objectness.append(layer_outs[-1][0][3*i][0])
 
 
 	# objectness=[]

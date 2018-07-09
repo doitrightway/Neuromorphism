@@ -22,8 +22,8 @@ import objectnessgenerator
 if __name__ ==  '__main__':
 
 
-	trainingfolder="trainingobjectnessdataiou_random_boundingboxes"
-	winubu='\\'
+	trainingfolder="trainingobjectnessdataiou_2objects_nearest"
+	winubu='/'
 	filelist = listdir(trainingfolder)
 	dim=64
 
@@ -31,10 +31,10 @@ if __name__ ==  '__main__':
 	noofsamples=L
 	mylist = random.sample(range(L),noofsamples)
 
-	testingfolder="testingobjectnessdataiou_random_boundingboxes"
+	testingfolder="testingobjectnessdataiou_2objects_nearest"
 	testlist = listdir(testingfolder)
 	x_test= np.zeros((len(testlist),64,64,1))
-	y_test=np.zeros((len(testlist),2))
+	y_test=np.zeros(len(testlist))
 
 	for i in range(len(testlist)):
 		file= open(testingfolder+winubu+testlist[i],'rb')
@@ -42,8 +42,9 @@ if __name__ ==  '__main__':
 		file.close()
 		data=np.array(object_file['data'])
 		x_test[i]=data.reshape(dim,dim,1)
-		one_hot_labels = keras.utils.to_categorical(object_file['label'], num_classes=2)
-		y_test[i]=one_hot_labels
+		y_test[i]=object_file['label']
+		# one_hot_labels = keras.utils.to_categorical(object_file['label'], num_classes=2)
+		# y_test[i]=one_hot_labels
 
 
 	training_data= objectnessgenerator.DataGenerator(filelist,mylist,trainingfolder,winubu,dim)
@@ -67,13 +68,13 @@ if __name__ ==  '__main__':
 	#model.add(Dropout(0.1))
 
 	model.add(Flatten())
-	model.add(Dense(2, activation = 'softmax',kernel_initializer=initializers.RandomNormal(stddev=0.001)))
+	model.add(Dense(1, activation = 'sigmoid',kernel_initializer=initializers.RandomNormal(stddev=0.001)))
 
 
-	checkpoint = keras.callbacks.ModelCheckpoint('objectnessnetworkiou_random_boundingboxes.{epoch:02d}.hdf5', monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)
+	checkpoint = keras.callbacks.ModelCheckpoint('objectnessnetworkiou_2objects_nearest.{epoch:02d}.hdf5', monitor='val_loss', verbose=0, save_best_only=True, save_weights_only=False, mode='auto', period=1)
 
 	sgd = SGD(lr=0.01, decay=.003, momentum=0.9, nesterov=True)
-	model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+	model.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
 	model.fit_generator(generator=training_data ,epochs=10,validation_data = (x_test, y_test), callbacks=[checkpoint],use_multiprocessing=True)
 	score, accuracy= model.evaluate(x_test, y_test, batch_size=32)
 	print (score)

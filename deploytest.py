@@ -438,26 +438,45 @@ model1.load_weights('graspnetwork.05.h5')
 
 
 
-model2 = Sequential()
-model2.add(Conv2D(32,(6,6),activation = 'relu', input_shape = (64,64,1)))
+# model2 = Sequential()
+# model2.add(Conv2D(32,(6,6),activation = 'relu', input_shape = (64,64,1)))
+# model2.add(MaxPooling2D(pool_size = (2,2),padding='same'))
+# model2.add(BatchNormalization())
+# #model2.add(Dropout(0.1))
+# model2.add(Conv2D(64, (3,3), activation='relu'))
+# model2.add(MaxPooling2D(pool_size = (2,2),padding='same'))
+# model2.add(BatchNormalization())
+# #model2.add(Dropout(0.1))
+
+# model2.add(Conv2D(128, (3,3), activation='relu'))
+# model2.add(MaxPooling2D(pool_size = (2,2),padding='same'))
+# model2.add(BatchNormalization())
+# #model2.add(Dropout(0.1))
+
+# model2.add(Flatten())
+# model2.add(Dense(2, activation = 'softmax'))
+
+# model2.load_weights('objectnessnetwork.07.h5')
+
+model2=Sequential()
+
+model2.add(Conv2D(32,(6,6),activation = 'relu', input_shape = (64,64,1), kernel_initializer=initializers.RandomNormal(stddev=0.001)))
 model2.add(MaxPooling2D(pool_size = (2,2),padding='same'))
 model2.add(BatchNormalization())
 #model2.add(Dropout(0.1))
-model2.add(Conv2D(64, (3,3), activation='relu'))
+model2.add(Conv2D(64, (3,3), activation='relu', kernel_initializer=initializers.RandomNormal(stddev=0.001)))
 model2.add(MaxPooling2D(pool_size = (2,2),padding='same'))
 model2.add(BatchNormalization())
 #model2.add(Dropout(0.1))
 
-model2.add(Conv2D(128, (3,3), activation='relu'))
+model2.add(Conv2D(128, (3,3), activation='relu', kernel_initializer=initializers.RandomNormal(stddev=0.001)))
 model2.add(MaxPooling2D(pool_size = (2,2),padding='same'))
 model2.add(BatchNormalization())
 #model2.add(Dropout(0.1))
 
 model2.add(Flatten())
-model2.add(Dense(2, activation = 'softmax'))
-
-model2.load_weights('objectnessnetwork.07.h5')
-
+model2.add(Dense(1, activation = 'sigmoid',kernel_initializer=initializers.RandomNormal(stddev=0.001)))
+model2.load_weights('objectnessnetworkiou_2objects_nearest.08.h5')
 
 
 firsttime=0
